@@ -15,6 +15,9 @@ FROM node:18-slim
 
 WORKDIR /app
 
+# OpenSSL necessário para Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 COPY backend/package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
