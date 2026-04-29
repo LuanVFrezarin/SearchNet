@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CONSULTANT
+}
+
+enum DifficultyLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Severity {
+  CRITICAL
+  MEDIUM
+  LOW
+  CONFIG
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CONSULTANT)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  errors    NetsuiteError[]
+  feedback  ErrorFeedback[]
+  comments  Comment[]
+
+  @@map("users")
+}
+
+model NetsuiteError {
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  rootCause       String?         @map("root_cause")
+  solution        String
+  netsuitePath    String?         @map("netsuite_path")
+  howToTest       String?         @map("how_to_test")
+  postValidation  String?         @map("post_validation")
+  difficultyLevel DifficultyLevel @default(BASIC) @map("difficulty_level")
+  severity        Severity        @default(MEDIUM)
+  createdBy       String          @map("created_by")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  author     User            @relation(fields: [createdBy], references: [id])
+  images     ErrorImage[]
+  tags       ErrorTag[]
+  feedback   ErrorFeedback[]
+  comments   Comment[]
+  embedding  ErrorEmbedding?
+
+  @@map("errors")
+}
+
+model ErrorImage {
+  id            String   @id @default(uuid())
+  errorId       String?  @map("error_id")
+  imageUrl      String   @map("image_url")
+  extractedText String?  @map("extracted_text")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  error NetsuiteError? @relation(fields: [errorId], references: [id], onDelete: Cascade)
+
+  @@map("error_images")
+}
+
+model Tag {
+  id   String     @id @default(uuid())
+  name String     @unique
+  errors ErrorTag[]
+
+  @@map("tags")
+}
+
+model ErrorTag {
+  errorId String @map("error_id")
+  tagId   String @map("tag_id")
+
+  error NetsuiteError @relation(fields: [errorId], references: [id], onDelete: Cascade)
+  tag   Tag           @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([errorId, tagId])
+  @@map("error_tags")
+}
+
+model ErrorFeedback {
+  id        String   @id @default(uuid())
+  errorId   String   @map("error_id")
+  userId    String   @map("user_id")
+  worked    Boolean
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  error NetsuiteError @relation(fields: [errorId], references: [id], onDelete: Cascade)
+  user  User          @relation(fields: [userId], references: [id])
+
+  @@map("error_feedback")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  errorId   String   @map("error_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  error NetsuiteError @relation(fields: [errorId], references: [id], onDelete: Cascade)
+  user  User          @relation(fields: [userId], references: [id])
+
+  @@map("comments")
+}
+
+model ErrorEmbedding {
+  errorId         String @id @map("error_id")
+  embeddingVector Json   @map("embedding_vector")
+
+  error NetsuiteError @relation(fields: [errorId], references: [id], onDelete: Cascade)
+
+  @@map("error_embeddings")
+}

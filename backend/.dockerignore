@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.env
+.env.local
+uploads
+.prisma/client
+npm-debug.log
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
