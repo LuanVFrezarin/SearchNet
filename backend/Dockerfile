@@ -4,14 +4,14 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY prisma ./prisma/
+COPY backend/package*.json ./
+COPY backend/prisma ./prisma/
 
 # Install dependencies
 RUN npm ci
 
 # Copy source
-COPY . .
+COPY backend/ .
 
 # Build NestJS
 RUN npm run build
@@ -28,19 +28,19 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 # Copy package files
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # Install production dependencies only
 RUN npm ci --only=production && npm cache clean --force
 
 # Copy Prisma schema and migrations
-COPY prisma ./prisma/
+COPY backend/prisma ./prisma/
 
 # Copy built app from builder
 COPY --from=builder /app/dist ./dist
 
 # Copy entrypoint
-COPY docker-entrypoint.sh ./
+COPY backend/docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
 
 # Copy uploads directory
