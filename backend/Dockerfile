@@ -46,5 +46,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3001/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-# Run migrations and start app
+# Override node:18-alpine's ENTRYPOINT and run migrations then start app
+ENTRYPOINT []
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
