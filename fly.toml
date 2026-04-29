@@ -1,51 +1,55 @@
-# Fly.io configuration for NetSuite Error Library Backend
+# fly.toml app configuration file generated for netsuite-errors on 2026-04-29T14:58:04-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app = "netsuite-errors"
-primary_region = "gru"  # Guarulhos, São Paulo
+app = 'netsuite-errors'
+primary_region = 'gru'
 
 [build]
-dockerfile = "backend/Dockerfile"
-ignorefile = "backend/.dockerignore"
+  dockerfile = 'backend/Dockerfile'
+  ignorefile = 'backend/.dockerignore'
 
 [env]
-PORT = "3001"
+  PORT = '3001'
 
 [[services]]
-internal_port = 3001
-protocol = "tcp"
-processes = ["app"]
+  protocol = 'tcp'
+  internal_port = 3001
+  processes = ['app']
 
   [[services.ports]]
-  port = 80
-  handlers = ["http"]
-  force_https = true
+    port = 80
+    handlers = ['http']
+    force_https = true
 
   [[services.ports]]
-  port = 443
-  handlers = ["tls", "http"]
+    port = 443
+    handlers = ['tls', 'http']
 
-  [services.tcp_checks]
-  enabled = true
-  grace_period = "10s"
-  interval = "15s"
-  timeout = "5s"
+  [[services.tcp_checks]]
+    interval = '15s'
+    timeout = '10s'
+    grace_period = '120s'
 
-[[services.http_checks]]
-path = "/health"
-interval = 10000
-timeout = 5000
-grace_period = "30s"
+  [[services.http_checks]]
+    interval = '15s'
+    timeout = '10s'
+    grace_period = '120s'
+    path = '/health'
 
 [checks]
   [checks.status]
-  port = 3001
-  type = "http"
-  interval = "30s"
-  timeout = "5s"
-  grace_period = "30s"
-  method = "GET"
-  path = "/health"
+    port = 3001
+    type = 'http'
+    interval = '30s'
+    timeout = '10s'
+    grace_period = '120s'
+    method = 'GET'
+    path = '/health'
 
 [[vm]]
-memory = "512mb"
-cpus = 1
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 512
