@@ -1,54 +1,32 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:18-slim AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
-
-# Install dependencies
 RUN npm ci
-
-# Copy source
 COPY backend/ .
-
-# Build NestJS
 RUN npm run build
-
-# Prisma client generation
 RUN npx prisma generate
 
-# Production stage
-FROM node:18-alpine
+# Production stage - usar Debian slim para compatibilidade com Prisma/OpenSSL
+FROM node:18-slim
 
 WORKDIR /app
 
-# OpenSSL is required by Prisma on Alpine Linux
-RUN apk add --no-cache openssl
-
-# Copy package files
 COPY backend/package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Install production dependencies only
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy Prisma schema and migrations
 COPY backend/prisma ./prisma/
-
-# Generate Prisma client for the correct platform
 RUN npx prisma generate
 
-# Copy built app from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy uploads directory
 RUN mkdir -p uploads
 
-# Expose port
 EXPOSE 3001
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3001/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
