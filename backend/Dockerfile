@@ -7,7 +7,7 @@ COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
 RUN npm ci
 COPY backend/ .
-RUN npm run build
+RUN npm run build && ls -la dist/
 RUN npx prisma generate
 
 # Production stage - usar Debian slim para compatibilidade com Prisma/OpenSSL
@@ -25,6 +25,7 @@ COPY backend/prisma ./prisma/
 RUN npx prisma generate
 
 COPY --from=builder /app/dist ./dist
+RUN ls -la dist/ || echo "DIST VAZIO!"
 
 RUN mkdir -p uploads
 
