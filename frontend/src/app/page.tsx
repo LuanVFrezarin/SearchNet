@@ -27,6 +27,7 @@ export default function HomePage() {
         <h1 className="text-4xl font-bold text-gray-900 mb-3">
           NetSuite Error Library
         </h1>
+        <p className="text-sm text-gray-400 mb-2">v2.0 - Deployed with Vercel</p>
         <p className="text-lg text-gray-500 mb-8">
           Find solutions fast. Paste the error, get the fix.
         </p>
