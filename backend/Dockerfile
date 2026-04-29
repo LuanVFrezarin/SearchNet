@@ -48,6 +48,3 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Run migrations and start app
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
-
-# Run migrations then start app
-CMD ["./docker-entrypoint.sh"]
