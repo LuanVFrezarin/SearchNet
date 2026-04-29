@@ -24,6 +24,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# OpenSSL is required by Prisma on Alpine Linux
+RUN apk add --no-cache openssl
+
 # Copy package files
 COPY backend/package*.json ./
 
@@ -32,6 +35,9 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy Prisma schema and migrations
 COPY backend/prisma ./prisma/
+
+# Generate Prisma client for the correct platform
+RUN npx prisma generate
 
 # Copy built app from builder
 COPY --from=builder /app/dist ./dist
