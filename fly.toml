@@ -1,7 +1,7 @@
 # Fly.io configuration for NetSuite Error Library Backend
 
 app = "netsuite-errors"
-primary_region = "gig"  # Guarulhos, São Paulo
+primary_region = "gru"  # Guarulhos, São Paulo
 
 [build]
 dockerfile = "backend/Dockerfile"
