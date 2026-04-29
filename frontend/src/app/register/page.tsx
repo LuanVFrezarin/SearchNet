@@ -47,6 +47,7 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               className="input-field"
               placeholder="Your name"
+              autoComplete="name"
               required
               minLength={2}
             />
@@ -62,6 +63,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="input-field"
               placeholder="your@email.com"
+              autoComplete="email"
               required
             />
           </div>
@@ -76,6 +78,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="input-field"
               placeholder="Min. 6 characters"
+              autoComplete="new-password"
               required
               minLength={6}
             />
